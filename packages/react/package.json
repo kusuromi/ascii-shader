@@ -1,0 +1,57 @@
+{
+  "name": "@ascii-background/react",
+  "version": "0.1.0",
+  "description": "React component and optional controls for an animated ASCII background.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "./dist/styles.css"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean && node scripts-copy-styles.mjs",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ascii-background/core": "0.1.0",
+    "@base-ui/react": "^1.6.0",
+    "lucide-react": "^0.468.0"
+  },
+  "peerDependencies": {
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  }
+}

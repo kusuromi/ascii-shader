@@ -1,0 +1,430 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Inter:wght@500;600&display=swap");
+
+@media (min-width: 2200px) and (min-height: 1000px) {
+  .ascii-controls,
+  .ascii-controls__collapsed {
+    zoom: 1.25;
+  }
+}
+
+@media (min-width: 3200px) and (min-height: 1400px) {
+  .ascii-controls,
+  .ascii-controls__collapsed {
+    zoom: 1.5;
+  }
+}
+
+.ascii-controls,
+.ascii-controls__collapsed {
+  box-sizing: border-box;
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.ascii-controls *,
+.ascii-controls *::before,
+.ascii-controls *::after,
+.ascii-controls__collapsed *,
+.ascii-controls__collapsed *::before,
+.ascii-controls__collapsed *::after {
+  box-sizing: border-box;
+}
+
+.ascii-controls {
+  position: fixed;
+  z-index: 50;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  width: min(282px, calc(100vw - 20px));
+  height: min(416px, calc(100svh - 20px));
+  flex-direction: column;
+  overflow: hidden;
+  color: #fff;
+  background: #000;
+  border: 1px solid #242426;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.48);
+}
+
+.ascii-controls__header {
+  display: flex;
+  height: 48px;
+  min-height: 48px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+  padding: 11px 12px 12px;
+  border-bottom: 1px solid #242426;
+  box-sizing: border-box;
+}
+
+.ascii-controls__title,
+.ascii-controls__collapsed-title {
+  margin-right: auto;
+  color: #fff;
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.ascii-controls__icon-button {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #fff;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  transition: color 150ms ease, background-color 150ms ease;
+}
+
+.ascii-controls__icon-button:hover {
+  background: #28282B;
+}
+
+.ascii-controls__icon-button:focus-visible {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Lucide viewBox is 24x24; sizes below make the visible glyphs
+   match the mockup: reset ~14px, plus/minus 14px. */
+.ascii-controls__icon--reset {
+  width: 17.7px;
+  height: 17.7px;
+  stroke-width: 3;
+}
+
+.ascii-controls__icon--plus,
+.ascii-controls__icon--minus {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.3;
+}
+
+.ascii-controls__collapsed {
+  position: fixed;
+  z-index: 50;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  width: 146px;
+  height: 48px;
+  align-items: center;
+  gap: 4px;
+  padding: 12px;
+  color: #fff;
+  background: #000;
+  border: 1px solid #242426;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.48);
+}
+
+.ascii-controls__collapsed .ascii-controls__icon-button {
+  width: 24px;
+  height: 24px;
+}
+
+.ascii-controls__content {
+  flex: 1;
+  min-height: 0;
+  padding: 12px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #5B5B5B transparent;
+}
+
+.ascii-controls__content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ascii-controls__content::-webkit-scrollbar-thumb {
+  background: #5B5B5B;
+  border-radius: 999px;
+}
+
+.ascii-controls__group {
+  display: grid;
+  gap: 8px;
+}
+
+.ascii-controls__group--separated {
+  margin: 10px -12px 0;
+  padding: 10px 12px 0;
+  border-top: 1px solid #242426;
+}
+
+.ascii-controls__group-label {
+  color: #5b5b5b;
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.ascii-controls__range-list {
+  display: grid;
+  gap: 8px;
+}
+
+.ascii-controls__row {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) 52px;
+  align-items: center;
+  gap: 8px;
+}
+
+.ascii-controls__label {
+  overflow: hidden;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ascii-controls__switch-cell {
+  display: flex;
+  grid-column: span 2;
+  justify-content: flex-end;
+}
+
+.ascii-slider {
+  display: flex;
+  margin-left: 8px;
+  align-items: center;
+  touch-action: none;
+  user-select: none;
+}
+
+.ascii-slider__control {
+  display: flex;
+  width: 100%;
+  height: 12px;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+}
+
+.ascii-slider__control:focus-visible {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.42);
+}
+
+.ascii-slider__track {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  overflow: visible;
+  background: #242426;
+  border-radius: 1px;
+}
+
+.ascii-slider__indicator {
+  position: absolute;
+  height: 100%;
+  background: #fff;
+  border-radius: 1px 0 0 1px;
+}
+
+.ascii-slider__thumb {
+  display: block;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: 0;
+  border-radius: 2px;
+  outline: none;
+  inset-inline-start: clamp(6px, var(--thumb-percent, 50%), calc(100% - 6px)) !important;
+  transition: transform 120ms ease, background-color 120ms ease;
+}
+
+.ascii-slider__thumb:focus-visible {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.36);
+}
+
+.ascii-number-input {
+  display: block;
+  width: 52px;
+  height: 19px;
+  padding: 0 17px 0 4px;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  background: #18181A;
+  border: 1px solid #242426;
+  border-radius: 4px;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+}
+
+.ascii-number-field {
+  position: relative;
+  display: block;
+  width: 52px;
+}
+
+.ascii-number-field .ascii-number-input {
+  width: 100%;
+}
+
+.ascii-number-actions {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  bottom: 3px;
+  display: grid;
+  width: 12px;
+  grid-template-rows: 1fr 1fr;
+  gap: 1px;
+}
+
+.ascii-number-action {
+  display: grid;
+  width: 12px;
+  place-items: center;
+  padding: 0;
+  color: #fff;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.ascii-number-action:hover {
+  color: #A7A7A7;
+}
+
+.ascii-number-action:active {
+  color: #fff;
+}
+
+.ascii-number-action:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.65);
+  outline-offset: 1px;
+}
+
+.ascii-number-action:disabled {
+  color: #5B5B5B;
+  cursor: not-allowed;
+}
+
+.ascii-number-action__icon {
+  display: block;
+  width: 6px;
+  height: 4px;
+}
+
+.ascii-number-input:hover {
+  background: #1d1d1f;
+  border-color: #36363a;
+}
+
+.ascii-number-input:focus-visible {
+  color: #fff;
+  border-color: #A7A7A7;
+}
+
+.ascii-switch {
+  position: relative;
+  display: inline-flex;
+  width: 28px;
+  height: 16px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1px;
+  background: #18181A;
+  border: 1px solid #242426;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+.ascii-switch:hover {
+  border-color: #3a3a3e;
+}
+
+.ascii-switch:focus-visible {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.ascii-switch__thumb {
+  display: block;
+  width: 12px;
+  height: 12px;
+  background: #5B5B5B;
+  border-radius: 2px;
+  pointer-events: none;
+  transform: translateX(-12px);
+  transition: transform 150ms ease, background-color 150ms ease;
+}
+
+.ascii-switch[data-checked] .ascii-switch__thumb,
+.ascii-switch__thumb[data-checked] {
+  background: #fff;
+  transform: translateX(0);
+}
+
+.ascii-slider[data-disabled],
+.ascii-number-input:disabled {
+  opacity: 1;
+}
+
+.ascii-number-actions--disabled {
+  pointer-events: none;
+}
+
+.ascii-slider[data-disabled] .ascii-slider__control {
+  cursor: not-allowed;
+}
+
+.ascii-slider[data-disabled] .ascii-slider__track {
+  background: #18181A;
+}
+
+.ascii-slider[data-disabled] .ascii-slider__indicator,
+.ascii-slider[data-disabled] .ascii-slider__thumb {
+  background: #5B5B5B;
+}
+
+.ascii-number-input:disabled {
+  color: #5B5B5B;
+  background: #18181A;
+  border-color: #242426;
+  cursor: not-allowed;
+}
+
+.ascii-controls__label--disabled {
+  color: #5B5B5B;
+}
+
+.ascii-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ascii-controls *,
+  .ascii-controls__collapsed * {
+    transition-duration: 0.01ms !important;
+  }
+}

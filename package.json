@@ -1,0 +1,20 @@
+{
+  "name": "ascii-background-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run build:packages && npm run dev -w ascii-background-demo",
+    "build": "npm run build:packages && npm run build -w ascii-background-demo",
+    "build:packages": "npm run build -w @ascii-background/core && npm run build -w @ascii-background/react",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "clean": "node scripts/clean.mjs"
+  },
+  "engines": {
+    "node": ">=20.19"
+  }
+}
