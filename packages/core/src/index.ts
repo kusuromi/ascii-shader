@@ -1,6 +1,8 @@
 export { clamp } from "./math";
 export { fbm, noise } from "./noise";
 export { createAsciiRenderer } from "./renderer";
+export { createAsciiEngineHost, TARGET_FRAME_RATE } from "./host";
+export type { AsciiEngineHostOptions, AsciiHostFrame } from "./host";
 export {
   ASCII_GLYPHS,
   DEFAULT_ASCII_SETTINGS,
