@@ -1,7 +1,7 @@
 {
-  "name": "@ascii-background/webgl",
+  "name": "@ascii-shader/renderer",
   "version": "0.1.0",
-  "description": "WebGL renderer for an animated ASCII background.",
+  "description": "Two-pass WebGL renderer for the ASCII shader.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -30,7 +30,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ascii-background/core": "0.1.0"
+    "@ascii-shader/core": "0.1.0"
   },
   "devDependencies": {
     "tsup": "^8.5.0",

@@ -1,7 +1,7 @@
 {
-  "name": "@ascii-background/core",
+  "name": "@ascii-shader/core",
   "version": "0.1.0",
-  "description": "Framework-agnostic Canvas 2D renderer for an animated ASCII background.",
+  "description": "Engine host, settings, and shared types for the ASCII shader renderer.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,

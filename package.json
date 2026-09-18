@@ -1,5 +1,5 @@
 {
-  "name": "ascii-background-monorepo",
+  "name": "ascii-shader-monorepo",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -8,9 +8,9 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "npm run build:packages && npm run dev -w ascii-background-demo",
-    "build": "npm run build:packages && npm run build -w ascii-background-demo",
-    "build:packages": "npm run build -w @ascii-background/core && npm run build -w @ascii-background/webgl && npm run build -w @ascii-background/react",
+    "dev": "npm run build:packages && npm run dev -w ascii-shader-demo",
+    "build": "npm run build:packages && npm run build -w ascii-shader-demo",
+    "build:packages": "npm run build -w @ascii-shader/core && npm run build -w @ascii-shader/renderer && npm run build -w @ascii-shader/react",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "clean": "node scripts/clean.mjs"
   },

@@ -3,7 +3,7 @@ import { Slider } from "@base-ui/react/slider";
 import { Switch } from "@base-ui/react/switch";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { useId, useState, type CSSProperties, type ReactNode } from "react";
-import { SETTING_LIMITS, type AsciiSettings } from "@ascii-background/core";
+import { SETTING_LIMITS, type AsciiSettings } from "@ascii-shader/core";
 
 export type AsciiControlsProps = {
   value: AsciiSettings;
@@ -21,6 +21,8 @@ type RangeControlProps = {
   max: number;
   step: number;
   digits: number;
+  unit?: "%" | "px" | "pc" | "pt";
+  scaled?: boolean;
   disabled?: boolean;
   onChange: (value: number) => void;
 };
@@ -33,6 +35,8 @@ function RangeControl({
   max,
   step,
   digits,
+  unit,
+  scaled = false,
   disabled = false,
   onChange,
 }: RangeControlProps) {
@@ -78,63 +82,34 @@ function RangeControl({
       </Slider.Root>
 
       <NumberField.Root
-        className="ascii-number-field"
-        value={value}
-        min={min}
-        max={max}
-        step={step}
+        className={`ascii-number-field${disabled ? " ascii-number-field--disabled" : ""}`}
+        value={scaled ? Math.min(100, Math.max(0, Math.round(((value - min) / (max - min)) * 100))) : value}
+        min={scaled ? 0 : min}
+        max={scaled ? 100 : max}
+        step={scaled ? 1 : step}
         disabled={disabled}
         format={{
-          minimumFractionDigits: digits,
-          maximumFractionDigits: digits,
+          minimumFractionDigits: scaled ? 0 : digits,
+          maximumFractionDigits: scaled ? 0 : digits,
           useGrouping: false,
         }}
         onValueChange={(nextValue) => {
-          if (nextValue !== null && Number.isFinite(nextValue)) onChange(nextValue);
+          if (nextValue === null || !Number.isFinite(nextValue)) return;
+          if (!scaled) {
+            onChange(nextValue);
+            return;
+          }
+          const percent = Math.min(100, Math.max(0, nextValue));
+          const raw = min + (percent / 100) * (max - min);
+          const factor = 10 ** digits;
+          onChange(Math.min(max, Math.max(min, Math.round(raw * factor) / factor)));
         }}
       >
         <NumberField.Input
-          aria-label={`${label}: numeric value`}
+          aria-label={`${label}${scaled ? " percent" : ""} value`}
           className="ascii-number-input"
         />
-        <span className={`ascii-number-actions${disabled ? " ascii-number-actions--disabled" : ""}`}>
-          <NumberField.Increment
-            className="ascii-number-action ascii-number-action--increment"
-            aria-label={`Increase ${label}`}
-          >
-            <svg
-              className="ascii-number-action__icon"
-              viewBox="0 0 12 8"
-              aria-hidden="true"
-            >
-              <path
-                d="M1.9 7.4 L10.1 7.4 Q11.4 7.4 10.591 6.382 L6.809 1.618 Q6 0.6 5.191 1.618 L1.409 6.382 Q0.6 7.4 1.9 7.4 Z"
-                fill="currentColor"
-                stroke="currentColor"
-                strokeWidth="1"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </NumberField.Increment>
-          <NumberField.Decrement
-            className="ascii-number-action ascii-number-action--decrement"
-            aria-label={`Decrease ${label}`}
-          >
-            <svg
-              className="ascii-number-action__icon"
-              viewBox="0 0 12 8"
-              aria-hidden="true"
-            >
-              <path
-                d="M1.9 0.6 L10.1 0.6 Q11.4 0.6 10.591 1.618 L6.809 6.382 Q6 7.4 5.191 6.382 L1.409 1.618 Q0.6 0.6 1.9 0.6 Z"
-                fill="currentColor"
-                stroke="currentColor"
-                strokeWidth="1"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </NumberField.Decrement>
-        </span>
+        {unit ? <span className="ascii-number-suffix">{unit}</span> : null}
       </NumberField.Root>
     </div>
   );
@@ -200,7 +175,7 @@ export function AsciiControls({
     <aside
       className={`ascii-controls ${className}`.trim()}
       style={style}
-      aria-label="ASCII background settings"
+      aria-label="ASCII shader settings"
     >
       <div className="ascii-controls__header">
         <span className="ascii-controls__title">SETTINGS</span>
@@ -256,6 +231,8 @@ export function AsciiControls({
               description="Pointer interaction intensity"
               value={value.cursor.strength}
               {...SETTING_LIMITS.cursorStrength}
+              scaled
+              unit="%"
               disabled={!value.cursor.enabled}
               onChange={(next) => updateCursor("strength", next)}
             />
@@ -264,6 +241,7 @@ export function AsciiControls({
               description="Cursor influence radius (% of the shorter screen side)"
               value={value.cursor.radius}
               {...SETTING_LIMITS.cursorRadius}
+              unit="%"
               disabled={!value.cursor.enabled}
               onChange={(next) => updateCursor("radius", next)}
             />
@@ -272,6 +250,8 @@ export function AsciiControls({
               description="Pointer smoothing"
               value={value.cursor.follow}
               {...SETTING_LIMITS.cursorFollow}
+              scaled
+              unit="%"
               disabled={!value.cursor.enabled}
               onChange={(next) => updateCursor("follow", next)}
             />
@@ -287,6 +267,8 @@ export function AsciiControls({
               description="Noise frequency"
               value={value.frequency}
               {...SETTING_LIMITS.frequency}
+              scaled
+              unit="%"
               onChange={(next) => update("frequency", next)}
             />
             <RangeControl
@@ -294,6 +276,8 @@ export function AsciiControls({
               description="Animation speed"
               value={value.speed}
               {...SETTING_LIMITS.speed}
+              scaled
+              unit="%"
               onChange={(next) => update("speed", next)}
             />
             <RangeControl
@@ -301,6 +285,8 @@ export function AsciiControls({
               description="Base luminance"
               value={value.lightness}
               {...SETTING_LIMITS.lightness}
+              scaled
+              unit="%"
               onChange={(next) => update("lightness", next)}
             />
             <RangeControl
@@ -308,6 +294,8 @@ export function AsciiControls({
               description="Glyph separation"
               value={value.contrast}
               {...SETTING_LIMITS.contrast}
+              scaled
+              unit="%"
               onChange={(next) => update("contrast", next)}
             />
             <RangeControl
@@ -315,6 +303,8 @@ export function AsciiControls({
               description="Layer opacity"
               value={value.opacity}
               {...SETTING_LIMITS.opacity}
+              scaled
+              unit="%"
               onChange={(next) => update("opacity", next)}
             />
             <RangeControl
@@ -322,12 +312,14 @@ export function AsciiControls({
               description="ASCII grid cell size"
               value={value.cellSize}
               {...SETTING_LIMITS.cellSize}
+              unit="px"
               onChange={(next) => update("cellSize", next)}
             />
             <RangeControl
               label="Glyphs"
               description="Number of glyph levels"
               value={value.glyphCount}
+              unit="pt"
               {...SETTING_LIMITS.glyphCount}
               onChange={(next) => update("glyphCount", next)}
             />

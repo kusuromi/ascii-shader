@@ -36,7 +36,7 @@
   right: 10px;
   display: flex;
   width: min(282px, calc(100vw - 20px));
-  height: min(416px, calc(100svh - 20px));
+  height: min(408px, calc(100svh - 20px));
   flex-direction: column;
   overflow: hidden;
   color: #fff;
@@ -248,99 +248,71 @@
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.36);
 }
 
-.ascii-number-input {
-  display: block;
+.ascii-number-field {
+  position: relative;
+  display: flex;
   width: 52px;
-  height: 19px;
-  padding: 0 17px 0 4px;
-  color: #fff;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  text-align: right;
+  height: 18px;
+  align-items: center;
   background: #18181A;
   border: 1px solid #242426;
   border-radius: 4px;
   outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: textfield;
   transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
 }
 
-.ascii-number-field {
-  position: relative;
-  display: block;
-  width: 52px;
-}
-
-.ascii-number-field .ascii-number-input {
-  width: 100%;
-}
-
-.ascii-number-actions {
-  position: absolute;
-  top: 3px;
-  right: 4px;
-  bottom: 3px;
-  display: grid;
-  width: 12px;
-  grid-template-rows: 1fr 1fr;
-  gap: 1px;
-}
-
-.ascii-number-action {
-  display: grid;
-  width: 12px;
-  place-items: center;
-  padding: 0;
-  color: #fff;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  transition: color 150ms ease;
-}
-
-.ascii-number-action:hover {
-  color: #A7A7A7;
-}
-
-.ascii-number-action:active {
-  color: #fff;
-}
-
-.ascii-number-action:focus-visible {
-  outline: 1px solid rgba(255, 255, 255, 0.65);
-  outline-offset: 1px;
-}
-
-.ascii-number-action:disabled {
-  color: #5B5B5B;
-  cursor: not-allowed;
-}
-
-.ascii-number-action__icon {
-  display: block;
-  width: 6px;
-  height: 4px;
-}
-
-.ascii-number-input:hover {
+.ascii-number-field:hover {
   background: #1d1d1f;
   border-color: #36363a;
 }
 
-.ascii-number-input:focus-visible {
+.ascii-number-field:focus-within {
+  background: #28282b;
+  border-color: #5B5B5B;
+}
+
+.ascii-number-field--disabled {
+  cursor: not-allowed;
+}
+
+.ascii-number-field--disabled .ascii-number-input,
+.ascii-number-field--disabled .ascii-number-suffix {
+  color: #5B5B5B;
+}
+
+.ascii-number-input {
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  padding: 0 2px;
   color: #fff;
-  border-color: #A7A7A7;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: right;
+  background: transparent;
+  border: 0;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+}
+
+.ascii-number-suffix {
+  flex-shrink: 0;
+  padding-right: 4px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  user-select: none;
 }
 
 .ascii-switch {
   position: relative;
   display: inline-flex;
-  width: 28px;
-  height: 16px;
+  width: 32px;
+  height: 18px;
   flex-shrink: 0;
   align-items: center;
   justify-content: flex-end;
@@ -362,12 +334,12 @@
 
 .ascii-switch__thumb {
   display: block;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   background: #5B5B5B;
   border-radius: 2px;
   pointer-events: none;
-  transform: translateX(-12px);
+  transform: translateX(-14px);
   transition: transform 150ms ease, background-color 150ms ease;
 }
 
@@ -380,10 +352,6 @@
 .ascii-slider[data-disabled],
 .ascii-number-input:disabled {
   opacity: 1;
-}
-
-.ascii-number-actions--disabled {
-  pointer-events: none;
 }
 
 .ascii-slider[data-disabled] .ascii-slider__control {
@@ -399,11 +367,8 @@
   background: #5B5B5B;
 }
 
-.ascii-number-input:disabled {
+.ascii-number-field--disabled .ascii-number-suffix {
   color: #5B5B5B;
-  background: #18181A;
-  border-color: #242426;
-  cursor: not-allowed;
 }
 
 .ascii-controls__label--disabled {

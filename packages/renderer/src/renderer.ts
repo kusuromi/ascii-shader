@@ -1,4 +1,4 @@
-import type { AsciiSettings } from "@ascii-background/core";
+import type { AsciiSettings } from "@ascii-shader/core";
 
 const VERTEX_SHADER = /* glsl */ `
 attribute vec2 aPos;
@@ -11,8 +11,7 @@ void main() {
 `;
 
 // Pass 1: computes the per-cell luminance field on the GPU, one pixel per cell.
-// This is a direct port of the Canvas 2D field loop from @ascii-background/core,
-// so both engines produce the same picture.
+// This shader is the single source of truth for the field formula.
 const FIELD_FRAGMENT_SHADER = /* glsl */ `
 precision highp float;
 
@@ -28,7 +27,6 @@ uniform float uCursorStrength;
 uniform float uCursorEnabled;
 
 float hash21(vec2 p) {
-  // Must match hash() in @ascii-background/core noise.ts.
   // mod 289 keeps lattice coordinates bounded: they grow with time,
   // and float32 loses precision on large inputs.
   p = mod(p, 289.0);

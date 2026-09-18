@@ -23,16 +23,3 @@ export type AsciiPointerState = {
   targetX: number;
   targetY: number;
 };
-
-export type AsciiRenderDimensions = {
-  width: number;
-  height: number;
-};
-
-export type AsciiRenderFrame = {
-  context: CanvasRenderingContext2D;
-  dimensions: AsciiRenderDimensions;
-  time: number;
-  settings: AsciiSettings;
-  pointer: AsciiPointerState;
-};

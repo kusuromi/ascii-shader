@@ -1,6 +1,3 @@
-export { clamp } from "./math";
-export { fbm, noise } from "./noise";
-export { createAsciiRenderer } from "./renderer";
 export { createAsciiEngineHost, TARGET_FRAME_RATE } from "./host";
 export type { AsciiEngineHostOptions, AsciiHostFrame } from "./host";
 export {
@@ -10,10 +7,4 @@ export {
   normalizeAsciiSettings,
   type PartialAsciiSettings,
 } from "./settings";
-export type {
-  AsciiCursorSettings,
-  AsciiPointerState,
-  AsciiRenderDimensions,
-  AsciiRenderFrame,
-  AsciiSettings,
-} from "./types";
+export type { AsciiCursorSettings, AsciiPointerState, AsciiSettings } from "./types";
