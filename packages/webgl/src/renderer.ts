@@ -1,4 +1,4 @@
-import type { AsciiSettings } from "@ascii-background/react";
+import type { AsciiSettings } from "@ascii-background/core";
 
 const VERTEX_SHADER = /* glsl */ `
 attribute vec2 aPos;

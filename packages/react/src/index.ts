@@ -1,4 +1,4 @@
-export { AsciiBackground, type AsciiBackgroundProps } from "./AsciiBackground";
+export { AsciiBackground, type AsciiBackgroundProps, type AsciiEngine } from "./AsciiBackground";
 export { AsciiControls, type AsciiControlsProps } from "./AsciiControls";
 export {
   usePersistentAsciiSettings,

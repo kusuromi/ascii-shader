@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 const paths = [
   "node_modules",
   "packages/core/dist",
+  "packages/webgl/dist",
   "packages/react/dist",
   "apps/demo/dist",
 ];

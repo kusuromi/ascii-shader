@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 COPY packages/core/package.json ./packages/core/package.json
+COPY packages/webgl/package.json ./packages/webgl/package.json
 COPY packages/react/package.json ./packages/react/package.json
 COPY apps/demo/package.json ./apps/demo/package.json
 

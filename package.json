@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "npm run build:packages && npm run dev -w ascii-background-demo",
     "build": "npm run build:packages && npm run build -w ascii-background-demo",
-    "build:packages": "npm run build -w @ascii-background/core && npm run build -w @ascii-background/react",
+    "build:packages": "npm run build -w @ascii-background/core && npm run build -w @ascii-background/webgl && npm run build -w @ascii-background/react",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "clean": "node scripts/clean.mjs"
   },
