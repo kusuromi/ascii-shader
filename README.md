@@ -4,9 +4,9 @@ Monorepo for an animated, interactive ASCII shader rendered with WebGL and its R
 
 ## Packages
 
-- [`@ascii-shader/core`](packages/core) — engine host (animation loop, resize, pointer, context recovery), settings normalization, and shared types.
-- [`@ascii-shader/renderer`](packages/renderer) — the renderer: a two-pass WebGL 1 pipeline (luminance field pass → glyph composite pass) with a dynamically built glyph atlas.
-- [`@ascii-shader/react`](packages/react) — React component `<AsciiShader>`, optional settings panel, and persistent settings hook.
+- [`@ascii-shader/core`](packages/core) — engine host and shared types. Runs the animation loop, handles resize and pointer events, and context recovery.
+- [`@ascii-shader/renderer`](packages/renderer) — a two-pass WebGL 1 pipeline. Renders a luminance field pass and a glyph composite pass from a dynamically built glyph atlas.
+- [`@ascii-shader/react`](packages/react) — React components. The `<AsciiShader>` component, an optional settings panel, and a persistent settings hook.
 - [`apps/demo`](apps/demo) — Vite demo application.
 
 ## Development
