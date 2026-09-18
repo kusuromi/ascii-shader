@@ -4,7 +4,7 @@ import {
   normalizeAsciiSettings,
   type AsciiSettings,
   type PartialAsciiSettings,
-} from "@ascii-background/core";
+} from "@ascii-shader/core";
 
 export type UsePersistentAsciiSettingsOptions = {
   storageKey?: string;
@@ -14,7 +14,7 @@ export type UsePersistentAsciiSettingsOptions = {
 type SettingsUpdater = AsciiSettings | ((current: AsciiSettings) => AsciiSettings);
 
 export function usePersistentAsciiSettings({
-  storageKey = "ascii-background:settings",
+  storageKey = "ascii-shader:settings",
   initialSettings,
 }: UsePersistentAsciiSettingsOptions = {}) {
   const defaults = useMemo(

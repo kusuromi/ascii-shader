@@ -1,11 +1,12 @@
-# ASCII Background
+# ASCII Shader
 
-Monorepo for an animated ASCII background renderer and its React integration.
+Monorepo for an animated, interactive ASCII shader rendered with WebGL and its React integration.
 
 ## Packages
 
-- [`@ascii-background/core`](packages/core) — framework-independent Canvas 2D renderer.
-- [`@ascii-background/react`](packages/react) — React component, optional settings panel, and persistent settings hook.
+- [`@ascii-shader/core`](packages/core) — engine host (animation loop, resize, pointer, context recovery), settings normalization, and shared types.
+- [`@ascii-shader/renderer`](packages/renderer) — the renderer: a two-pass WebGL 1 pipeline (luminance field pass → glyph composite pass) with a dynamically built glyph atlas.
+- [`@ascii-shader/react`](packages/react) — React component `<AsciiShader>`, optional settings panel, and persistent settings hook.
 - [`apps/demo`](apps/demo) — Vite demo application.
 
 ## Development
@@ -29,4 +30,4 @@ docker compose up -d --build
 npm run build
 ```
 
-The package names use the example scope `@ascii-background`. Change the scope before publishing if needed.
+The package names use the example scope `@ascii-shader`. Change the scope before publishing if needed.

@@ -1,7 +1,7 @@
 {
-  "name": "@ascii-shader/core",
+  "name": "@ascii-shader/renderer",
   "version": "0.1.0",
-  "description": "Engine host, settings, and shared types for the ASCII shader renderer.",
+  "description": "Two-pass WebGL renderer for the ASCII shader.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -28,6 +28,9 @@
     "build": "tsup src/index.ts --format esm,cjs --dts --clean",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ascii-shader/core": "0.1.0"
   },
   "devDependencies": {
     "tsup": "^8.5.0",

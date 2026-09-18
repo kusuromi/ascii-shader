@@ -1,16 +1,17 @@
 import {
-  AsciiBackground,
+  AsciiShader,
   AsciiControls,
   usePersistentAsciiSettings,
-} from "@ascii-background/react";
-import "@ascii-background/react/styles.css";
+} from "@ascii-shader/react";
+import "@ascii-shader/react/styles.css";
 
 export default function App() {
   const { settings, setSettings, resetSettings } = usePersistentAsciiSettings();
 
   return (
     <main className="demo">
-      <AsciiBackground className="demo__background" {...settings} />
+      <AsciiShader className="demo__background" {...settings} />
+
       <AsciiControls
         value={settings}
         onValueChange={setSettings}

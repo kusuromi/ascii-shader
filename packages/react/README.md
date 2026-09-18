@@ -1,22 +1,24 @@
-# @ascii-background/react
+# @ascii-shader/react
 
-Animated ASCII background for React. The package includes the background component, an optional settings panel, and a localStorage settings hook.
+Animated, interactive, GPU-rendered ASCII shader for React. Includes the background component, an optional settings panel, and a localStorage settings hook.
+
+Rendering is WebGL-only (`@ascii-shader/renderer`); the animation loop is driven by `@ascii-shader/core`'s engine host. Without a WebGL context the component renders a black background.
 
 ## Install
 
 ```bash
-npm install @ascii-background/react
+npm install @ascii-shader/react @ascii-shader/core @ascii-shader/renderer
 ```
 
 ## Basic usage
 
 ```tsx
-import { AsciiBackground } from "@ascii-background/react";
+import { AsciiShader } from "@ascii-shader/react";
 
 export function Hero() {
   return (
     <section style={{ position: "relative", minHeight: "100vh", background: "#000" }}>
-      <AsciiBackground style={{ position: "absolute", inset: 0 }} />
+      <AsciiShader style={{ position: "absolute", inset: 0 }} />
 
       <div style={{ position: "relative", zIndex: 1 }}>
         Your content
@@ -30,11 +32,11 @@ export function Hero() {
 
 ```tsx
 import {
-  AsciiBackground,
+  AsciiShader,
   AsciiControls,
   usePersistentAsciiSettings,
-} from "@ascii-background/react";
-import "@ascii-background/react/styles.css";
+} from "@ascii-shader/react";
+import "@ascii-shader/react/styles.css";
 
 export function Demo() {
   const { settings, setSettings, resetSettings } =
@@ -42,7 +44,7 @@ export function Demo() {
 
   return (
     <main style={{ minHeight: "100vh", background: "#000" }}>
-      <AsciiBackground
+      <AsciiShader
         style={{ position: "fixed", inset: 0 }}
         {...settings}
       />
@@ -69,7 +71,7 @@ export function Demo() {
 | `lightness` | `number` | `0.92` |
 | `contrast` | `number` | `1.24` |
 | `opacity` | `number` | `0.82` |
-| `cursor` | `Partial<AsciiCursorSettings>` | enabled |
+| `cursor` | `Partial<AsciiCursorSettings>` | enabled, strength 0.34, radius 24, follow 0.06 |
 | `paused` | `boolean` | `false` |
 
-The component uses Canvas 2D, pauses outside the viewport, respects reduced-motion preferences, and limits device pixel ratio internally.
+Values are clamped to `SETTING_LIMITS` via `normalizeAsciiSettings`. The component pauses outside the viewport and on hidden tabs, respects `prefers-reduced-motion`, caps the device pixel ratio at 2, and recovers from WebGL context loss.
