@@ -1,19 +1,19 @@
-# @ascii-shader/react
+# @kusuromi/ascii-shader-react
 
 Animated, interactive, GPU-rendered ASCII shader for React. Includes the background component, an optional settings panel, and a localStorage settings hook.
 
-Rendering is WebGL-only (`@ascii-shader/renderer`); the animation loop is driven by `@ascii-shader/core`'s engine host. Without a WebGL context the component renders a black background.
+Rendering is WebGL-only (`@kusuromi/ascii-shader-renderer`); the animation loop is driven by `@kusuromi/ascii-shader-core`'s engine host. Without a WebGL context the component renders a black background.
 
 ## Install
 
 ```bash
-npm install @ascii-shader/react @ascii-shader/core @ascii-shader/renderer
+npm install @kusuromi/ascii-shader-react @kusuromi/ascii-shader-core @kusuromi/ascii-shader-renderer
 ```
 
 ## Basic usage
 
 ```tsx
-import { AsciiShader } from "@ascii-shader/react";
+import { AsciiShader } from "@kusuromi/ascii-shader-react";
 
 export function Hero() {
   return (
@@ -35,8 +35,8 @@ import {
   AsciiShader,
   AsciiControls,
   usePersistentAsciiSettings,
-} from "@ascii-shader/react";
-import "@ascii-shader/react/styles.css";
+} from "@kusuromi/ascii-shader-react";
+import "@kusuromi/ascii-shader-react/styles.css";
 
 export function Demo() {
   const { settings, setSettings, resetSettings } =

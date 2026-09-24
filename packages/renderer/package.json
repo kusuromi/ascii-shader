@@ -1,5 +1,5 @@
 {
-  "name": "@ascii-shader/renderer",
+  "name": "@kusuromi/ascii-shader-renderer",
   "version": "0.1.0",
   "description": "Two-pass WebGL renderer for the ASCII shader.",
   "license": "MIT",
@@ -30,7 +30,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ascii-shader/core": "0.1.0"
+    "@kusuromi/ascii-shader-core": "0.1.0"
   },
   "devDependencies": {
     "tsup": "^8.5.0",

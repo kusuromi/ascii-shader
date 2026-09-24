@@ -3,7 +3,7 @@ import { Slider } from "@base-ui/react/slider";
 import { Switch } from "@base-ui/react/switch";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { useId, useState, type CSSProperties, type ReactNode } from "react";
-import { SETTING_LIMITS, type AsciiSettings } from "@ascii-shader/core";
+import { SETTING_LIMITS, type AsciiSettings } from "@kusuromi/ascii-shader-core";
 
 export type AsciiControlsProps = {
   value: AsciiSettings;

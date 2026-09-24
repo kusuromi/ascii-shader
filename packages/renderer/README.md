@@ -1,4 +1,4 @@
-# @ascii-shader/renderer
+# @kusuromi/ascii-shader-renderer
 
 The single WebGL renderer for the ASCII shader. Computes everything on the GPU in two passes, one pixel per grid cell.
 
@@ -12,7 +12,7 @@ The glyph atlas is rasterized once per settings change with a Canvas 2D context 
 ## Usage
 
 ```ts
-import { createAsciiShaderRenderer } from "@ascii-shader/renderer";
+import { createAsciiShaderRenderer } from "@kusuromi/ascii-shader-renderer";
 
 const gl = canvas.getContext("webgl");
 if (gl) {
@@ -33,11 +33,11 @@ if (gl) {
 }
 ```
 
-The renderer pairs well with the animation loop, pointer tracking, and resize handling from `@ascii-shader/core`'s `createAsciiEngineHost`; for React, use `@ascii-shader/react` (which depends on `@ascii-shader/renderer` and `@ascii-shader/core`).
+The renderer pairs well with the animation loop, pointer tracking, and resize handling from `@kusuromi/ascii-shader-core`'s `createAsciiEngineHost`; for React, use `@kusuromi/ascii-shader-react` (which depends on `@kusuromi/ascii-shader-renderer` and `@kusuromi/ascii-shader-core`).
 
 ## Settings and pointer
 
-`render` accepts the same `AsciiSettings` shape as the rest of the monorepo (see `@ascii-shader/core`) plus a normalized pointer position in `0..1` space.
+`render` accepts the same `AsciiSettings` shape as the rest of the monorepo (see `@kusuromi/ascii-shader-core`) plus a normalized pointer position in `0..1` space.
 
 ## Lifecycle
 

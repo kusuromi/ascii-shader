@@ -12,4 +12,4 @@ export {
   type AsciiCursorSettings,
   type AsciiSettings,
   type PartialAsciiSettings,
-} from "@ascii-shader/core";
+} from "@kusuromi/ascii-shader-core";

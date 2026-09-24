@@ -4,9 +4,9 @@ Monorepo for an animated, interactive ASCII shader rendered with WebGL and its R
 
 ## Packages
 
-- [`@ascii-shader/core`](packages/core) — engine host with animation loop, resize and pointer handling.
-- [`@ascii-shader/renderer`](packages/renderer) — two-pass WebGL 1 pipeline with luminance and glyph passes.
-- [`@ascii-shader/react`](packages/react) — React component with optional controls and persistent settings.
+- [`@kusuromi/ascii-shader-core`](packages/core) — engine host with animation loop, resize and pointer handling.
+- [`@kusuromi/ascii-shader-renderer`](packages/renderer) — two-pass WebGL 1 pipeline with luminance and glyph passes.
+- [`@kusuromi/ascii-shader-react`](packages/react) — React component with optional controls and persistent settings.
 - [`apps/demo`](apps/demo) — Vite demo application.
 
 ## Development
@@ -30,4 +30,4 @@ docker compose up -d --build
 npm run build
 ```
 
-The package names use the example scope `@ascii-shader`. Change the scope before publishing if needed.
+The packages are published under the `@kusuromi` npm scope.

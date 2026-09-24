@@ -4,7 +4,7 @@ import {
   normalizeAsciiSettings,
   type AsciiSettings,
   type PartialAsciiSettings,
-} from "@ascii-shader/core";
+} from "@kusuromi/ascii-shader-core";
 
 export type UsePersistentAsciiSettingsOptions = {
   storageKey?: string;

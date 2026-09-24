@@ -1,4 +1,4 @@
-import type { AsciiSettings } from "@ascii-shader/core";
+import type { AsciiSettings } from "@kusuromi/ascii-shader-core";
 
 const VERTEX_SHADER = /* glsl */ `
 attribute vec2 aPos;

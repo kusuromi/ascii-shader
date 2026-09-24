@@ -4,8 +4,8 @@ import {
   createAsciiEngineHost,
   normalizeAsciiSettings,
   type AsciiSettings,
-} from "@ascii-shader/core";
-import { createAsciiShaderRenderer } from "@ascii-shader/renderer";
+} from "@kusuromi/ascii-shader-core";
+import { createAsciiShaderRenderer } from "@kusuromi/ascii-shader-renderer";
 
 export type AsciiShaderProps = Partial<Omit<AsciiSettings, "cursor">> & {
   cursor?: Partial<AsciiSettings["cursor"]>;

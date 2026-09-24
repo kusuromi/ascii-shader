@@ -1,11 +1,11 @@
-# @ascii-shader/core
+# @kusuromi/ascii-shader-core
 
-Engine host, settings, and shared types for the ASCII shader renderer. No rendering logic lives here — it belongs to `@ascii-shader/renderer`.
+Engine host, settings, and shared types for the ASCII shader renderer. No rendering logic lives here — it belongs to `@kusuromi/ascii-shader-renderer`.
 
 ## Install
 
 ```bash
-npm install @ascii-shader/core
+npm install @kusuromi/ascii-shader-core
 ```
 
 ## What it provides
@@ -16,11 +16,11 @@ npm install @ascii-shader/core
 
 ## Usage (raw, without React)
 
-The host only orchestrates; pair it with `createAsciiShaderRenderer` from `@ascii-shader/renderer`:
+The host only orchestrates; pair it with `createAsciiShaderRenderer` from `@kusuromi/ascii-shader-renderer`:
 
 ```ts
-import { createAsciiEngineHost } from "@ascii-shader/core";
-import { createAsciiShaderRenderer } from "@ascii-shader/renderer";
+import { createAsciiEngineHost } from "@kusuromi/ascii-shader-core";
+import { createAsciiShaderRenderer } from "@kusuromi/ascii-shader-renderer";
 
 const canvas = document.querySelector("canvas");
 const gl = canvas?.getContext("webgl");
@@ -52,4 +52,4 @@ const host = createAsciiEngineHost({
 // host.stop() when done
 ```
 
-Use `@ascii-shader/react` when you need a ready React component.
+Use `@kusuromi/ascii-shader-react` when you need a ready React component.

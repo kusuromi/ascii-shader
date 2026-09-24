@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "npm run build:packages && npm run dev -w ascii-shader-demo",
     "build": "npm run build:packages && npm run build -w ascii-shader-demo",
-    "build:packages": "npm run build -w @ascii-shader/core && npm run build -w @ascii-shader/renderer && npm run build -w @ascii-shader/react",
+    "build:packages": "npm run build -w @kusuromi/ascii-shader-core && npm run build -w @kusuromi/ascii-shader-renderer && npm run build -w @kusuromi/ascii-shader-react",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "clean": "node scripts/clean.mjs"
   },

@@ -2,8 +2,8 @@ import {
   AsciiShader,
   AsciiControls,
   usePersistentAsciiSettings,
-} from "@ascii-shader/react";
-import "@ascii-shader/react/styles.css";
+} from "@kusuromi/ascii-shader-react";
+import "@kusuromi/ascii-shader-react/styles.css";
 
 export default function App() {
   const { settings, setSettings, resetSettings } = usePersistentAsciiSettings();
