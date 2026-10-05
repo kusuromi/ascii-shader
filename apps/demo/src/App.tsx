@@ -1,5 +1,5 @@
 import {
-  AsciiShader,
+  AsciiShaderBackground,
   AsciiControls,
   usePersistentAsciiSettings,
 } from "@kusuromi/ascii-shader-react";
@@ -10,7 +10,7 @@ export default function App() {
 
   return (
     <main className="demo">
-      <AsciiShader className="demo__background" {...settings} />
+      <AsciiShaderBackground {...settings} />
 
       <AsciiControls
         value={settings}

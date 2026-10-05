@@ -10,9 +10,12 @@ body,
   margin: 0;
 }
 
-html,
-body {
+html {
   overflow: hidden;
+  background: #000;
+}
+
+body {
   background: #000;
 }
 
@@ -23,12 +26,6 @@ input {
 
 .demo {
   position: relative;
-  min-height: 100svh;
+  min-height: 100lvh;
   background: #000;
-}
-
-.demo__background {
-  position: absolute;
-  inset: 0;
-  min-height: calc(100% + 160px);
 }

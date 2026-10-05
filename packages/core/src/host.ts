@@ -3,6 +3,7 @@ import type { AsciiPointerState, AsciiSettings } from "./types";
 export const MAX_DEVICE_PIXEL_RATIO = 2;
 export const TARGET_FRAME_RATE = 60;
 export const CONTEXT_RESTORE_TIMEOUT_MS = 5000;
+const ORIENTATION_RESIZE_DELAY_MS = 250;
 
 export type AsciiHostFrame = {
   dimensions: { width: number; height: number };
@@ -51,6 +52,7 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
   let pendingResize: { width: number; height: number } | null = null;
   let forcePaint = true;
   let nextPaintTime = 0;
+  let orientationResizeTimer: number | null = null;
 
   let contextLost = false;
   let restoreTimer: number | null = null;
@@ -145,6 +147,26 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
     };
   };
 
+  const remeasureAndPaint = () => {
+    updateElementBounds();
+    pendingResize = { width: elementBounds.width, height: elementBounds.height };
+    forcePaint = true;
+    nextPaintTime = 0;
+    requestPaint();
+  };
+
+  const visualViewport = "visualViewport" in window ? window.visualViewport : null;
+  const onVisualViewportResize = () => remeasureAndPaint();
+  const onOrientationChange = () => {
+    if (orientationResizeTimer !== null) {
+      window.clearTimeout(orientationResizeTimer);
+    }
+    orientationResizeTimer = window.setTimeout(() => {
+      orientationResizeTimer = null;
+      remeasureAndPaint();
+    }, ORIENTATION_RESIZE_DELAY_MS);
+  };
+
   const updatePointer = (clientX: number, clientY: number) => {
     if (elementBounds.width <= 0 || elementBounds.height <= 0) return;
 
@@ -196,8 +218,7 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
     documentVisible = !document.hidden;
     if (documentVisible) {
       lastAnimationTime = globalThis.performance.now();
-      nextPaintTime = 0;
-      requestPaint();
+      remeasureAndPaint();
     }
   };
 
@@ -238,6 +259,10 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
   document.addEventListener("visibilitychange", onVisibilityChange);
   window.addEventListener("pointermove", onPointerMove, { passive: true });
   window.addEventListener("pointerdown", onPointerDown, { passive: true });
+  window.addEventListener("orientationchange", onOrientationChange);
+  if (visualViewport) {
+    visualViewport.addEventListener("resize", onVisualViewportResize);
+  }
 
   updateElementBounds();
   pendingResize = { width: elementBounds.width, height: elementBounds.height };
@@ -246,6 +271,10 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
   return {
     requestPaint,
     stop: () => {
+      if (orientationResizeTimer !== null) {
+        window.clearTimeout(orientationResizeTimer);
+        orientationResizeTimer = null;
+      }
       if (restoreTimer !== null) {
         window.clearTimeout(restoreTimer);
         restoreTimer = null;
@@ -261,6 +290,10 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("orientationchange", onOrientationChange);
+      if (visualViewport) {
+        visualViewport.removeEventListener("resize", onVisualViewportResize);
+      }
     },
   };
 }

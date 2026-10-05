@@ -30,7 +30,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@kusuromi/ascii-shader-core": "0.1.0"
+    "@kusuromi/ascii-shader-core": "0.2.0"
   },
   "devDependencies": {
     "tsup": "^8.5.0",

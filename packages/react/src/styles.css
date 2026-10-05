@@ -32,11 +32,11 @@
 .ascii-controls {
   position: fixed;
   z-index: 50;
-  top: 10px;
-  right: 10px;
+  top: calc(env(safe-area-inset-top, 0px) + 10px);
+  right: calc(env(safe-area-inset-right, 0px) + 10px);
   display: flex;
-  width: min(282px, calc(100vw - 20px));
-  height: min(408px, calc(100svh - 20px));
+  width: min(282px, calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 20px));
+  height: min(408px, calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 20px));
   flex-direction: column;
   overflow: hidden;
   color: #fff;
@@ -56,6 +56,7 @@
   padding: 11px 12px 12px;
   border-bottom: 1px solid #242426;
   box-sizing: border-box;
+  touch-action: none;
 }
 
 .ascii-controls__title,
@@ -111,8 +112,8 @@
 .ascii-controls__collapsed {
   position: fixed;
   z-index: 50;
-  top: 10px;
-  right: 10px;
+  top: calc(env(safe-area-inset-top, 0px) + 10px);
+  right: calc(env(safe-area-inset-right, 0px) + 10px);
   display: flex;
   width: 146px;
   height: 48px;
@@ -124,6 +125,7 @@
   border: 1px solid #242426;
   border-radius: 8px;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.48);
+  touch-action: none;
 }
 
 .ascii-controls__collapsed .ascii-controls__icon-button {
@@ -136,6 +138,8 @@
   min-height: 0;
   padding: 12px;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y pinch-zoom;
   scrollbar-width: thin;
   scrollbar-color: #5B5B5B transparent;
 }

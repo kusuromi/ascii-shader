@@ -1,6 +1,6 @@
 # @kusuromi/ascii-shader-react
 
-Animated, interactive, GPU-rendered ASCII shader for React. Includes the background component, an optional settings panel, and a localStorage settings hook.
+Animated, interactive, GPU-rendered ASCII shader for React. Includes `AsciiShaderBackground` for a full-viewport background, an optional settings panel, and a localStorage settings hook.
 
 Rendering is WebGL-only (`@kusuromi/ascii-shader-renderer`); the animation loop is driven by `@kusuromi/ascii-shader-core`'s engine host. Without a WebGL context the component renders a black background.
 
@@ -13,13 +13,12 @@ npm install @kusuromi/ascii-shader-react @kusuromi/ascii-shader-core @kusuromi/a
 ## Basic usage
 
 ```tsx
-import { AsciiShader } from "@kusuromi/ascii-shader-react";
+import { AsciiShaderBackground } from "@kusuromi/ascii-shader-react";
 
 export function Hero() {
   return (
-    <section style={{ position: "relative", minHeight: "100vh", background: "#000" }}>
-      <AsciiShader style={{ position: "absolute", inset: 0 }} />
-
+    <section style={{ position: "relative", minHeight: "100lvh" }}>
+      <AsciiShaderBackground />
       <div style={{ position: "relative", zIndex: 1 }}>
         Your content
       </div>
@@ -28,11 +27,15 @@ export function Hero() {
 }
 ```
 
+`AsciiShaderBackground` renders an absolute, pointer-transparent shader layer with a safe-area-aware top offset. Its `top` and `bottom` insets with `height: auto` stretch it from the top bleed to the bottom of its containing block; it does not add a fixed bottom runway. The layout is static and does not depend on JavaScript toggling a class. Give the parent that should define the background area `position: relative` and a meaningful height (for example, `min-height: 100lvh`); normal-flow content can make that parent taller than the viewport.
+
+The parent must establish the intended containing block. Flex and grid parents do not inherently disable the absolute layer's explicit `top`/`bottom` sizing, but make sure the positioned parent's box has the height you want the shader to cover. An ancestor with `overflow: hidden` clips anything outside its bounds, including the 62px top bleed; it does not ignore `bottom` or collapse the layer's height. Avoid that clipping when the shader must extend into the safe area. If you need a viewport-fixed background independent of the content height, or a scroll-driven effect, use a `position: fixed` layer for that use case. `AsciiShader` remains available for shader instances embedded in other layouts.
+
 ## With controls
 
 ```tsx
 import {
-  AsciiShader,
+  AsciiShaderBackground,
   AsciiControls,
   usePersistentAsciiSettings,
 } from "@kusuromi/ascii-shader-react";
@@ -43,12 +46,8 @@ export function Demo() {
     usePersistentAsciiSettings();
 
   return (
-    <main style={{ minHeight: "100vh", background: "#000" }}>
-      <AsciiShader
-        style={{ position: "fixed", inset: 0 }}
-        {...settings}
-      />
-
+    <main style={{ position: "relative", minHeight: "100lvh" }}>
+      <AsciiShaderBackground {...settings} />
       <AsciiControls
         value={settings}
         onValueChange={setSettings}
@@ -58,6 +57,8 @@ export function Demo() {
   );
 }
 ```
+
+For edge-to-edge rendering into iOS safe areas, the host page must opt in via its viewport meta tag (`viewport-fit=cover`). A React component cannot safely change page-wide viewport metadata or control Safari's browser chrome.
 
 ## Main props
 

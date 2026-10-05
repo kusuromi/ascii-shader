@@ -9,7 +9,7 @@
     "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
-    "@kusuromi/ascii-shader-react": "0.2.0",
+    "@kusuromi/ascii-shader-react": "0.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

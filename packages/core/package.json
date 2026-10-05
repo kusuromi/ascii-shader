@@ -1,6 +1,6 @@
 {
   "name": "@kusuromi/ascii-shader-core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Engine host, settings, and shared types for the ASCII shader renderer.",
   "license": "MIT",
   "type": "module",

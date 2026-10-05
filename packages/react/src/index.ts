@@ -1,4 +1,8 @@
 export { AsciiShader, type AsciiShaderProps } from "./AsciiShader";
+export {
+  AsciiShaderBackground,
+  type AsciiShaderBackgroundProps,
+} from "./AsciiShaderBackground";
 export { AsciiControls, type AsciiControlsProps } from "./AsciiControls";
 export {
   usePersistentAsciiSettings,

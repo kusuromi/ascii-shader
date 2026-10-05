@@ -1,6 +1,6 @@
 {
   "name": "@kusuromi/ascii-shader-react",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "React component and optional controls for an animated ASCII shader.",
   "license": "MIT",
   "type": "module",
@@ -33,7 +33,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@kusuromi/ascii-shader-core": "0.1.0",
+    "@kusuromi/ascii-shader-core": "0.2.0",
     "@kusuromi/ascii-shader-renderer": "0.2.0",
     "@base-ui/react": "^1.6.0",
     "lucide-react": "^0.468.0"
