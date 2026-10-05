@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@kusuromi/ascii-shader-core": "0.2.0",
-    "@kusuromi/ascii-shader-renderer": "0.2.0",
+    "@kusuromi/ascii-shader-renderer": "0.3.0",
     "@base-ui/react": "^1.6.0",
     "lucide-react": "^0.468.0"
   },
