@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## [react 0.4.0] - 2026-10-06
+
+### Fixed
+
+- Restored the correct renderer dependency, `0.3.0` instead of `0.2.0`, so viewport remeasurement from core `0.2.0` is resolved.
+- React `0.3.0` remains published with a stale renderer dependency and cannot be modified; consumers pinned to `0.3.0` should move to `0.4.0`.
+
 ## [core 0.2.0] - 2026-10-06
 
 ### Fixed
