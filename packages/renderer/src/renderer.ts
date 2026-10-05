@@ -17,6 +17,7 @@ precision highp float;
 
 uniform vec2 uResolution;
 uniform float uCellSize;
+#define WORLD_SCALE 1600.0
 uniform float uTime;
 uniform float uFrequency;
 uniform float uLightness;
@@ -65,10 +66,11 @@ float fbm(vec2 p) {
 }
 
 void main() {
-  // gl_FragCoord is the cell center, matching u = (column + 0.5) * cell / width.
-  vec2 uv = gl_FragCoord.xy * uCellSize / uResolution;
+  vec2 worldPx = gl_FragCoord.xy * uCellSize;
+  vec2 uv = worldPx / WORLD_SCALE;
 
-  vec2 cursorDelta = (uv - uCursor) * uResolution;
+  vec2 cursorPx = uCursor * uResolution;
+  vec2 cursorDelta = worldPx - cursorPx;
   float cursorGlow = uCursorEnabled * exp(-dot(cursorDelta, cursorDelta) / (uCursorRadius * uCursorRadius));
 
   float waveA = fbm(vec2(uv.x * uFrequency * 2.8 + uTime * 0.42, uv.y * uFrequency * 1.8 - uTime * 0.34));

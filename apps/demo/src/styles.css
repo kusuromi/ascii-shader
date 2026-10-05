@@ -28,6 +28,7 @@ input {
 }
 
 .demo__background {
-  position: fixed;
+  position: absolute;
   inset: 0;
+  min-height: calc(100% + 160px);
 }

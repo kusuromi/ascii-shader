@@ -39,6 +39,20 @@ The renderer pairs well with the animation loop, pointer tracking, and resize ha
 
 `render` accepts the same `AsciiSettings` shape as the rest of the monorepo (see `@kusuromi/ascii-shader-core`) plus a normalized pointer position in `0..1` space.
 
+## Texture scale
+
+The field shader converts cell positions to canvas pixels (`worldPx = gl_FragCoord.xy * uCellSize`) and calculates `uv` as `worldPx / WORLD_SCALE`. `WORLD_SCALE` is defined in the shader as:
+
+```glsl
+#define WORLD_SCALE 1600.0
+```
+
+It means one texture-space unit represents 1600 canvas pixels. The base periods of the two travelling waves are approximately `1600 / (frequency × 2.8)` for `waveA` and `1600 / (frequency × 5.2)` for `waveB`. At `frequency = 4.5`, these are about 127 px and 68 px respectively; the FBM octaves add finer detail. Because these distances are in pixels, the details keep the same size on any screen. Resizing the window changes only how many cells and how much of the field are visible; the texture scale and feature proportions do not change.
+
+`WORLD_SCALE` is a shader constant, not a uniform: it is an intrinsic property of this shader and is not a consumer-configurable setting. The value 1600 was chosen as a fixed design reference because it gives the documented ~127 px and ~68 px base periods at the maximum frequency of 4.5. Those details stay at a useful, consistent pixel size instead of being rescaled to fit each viewport.
+
+> **Version 0.1.0 settings warning:** If you tuned settings against 0.1.0, expect the rendered image to change after upgrading. Previously, `uv` was normalized to `0…1` across the entire viewport at every screen size, so the texture stretched to fill the canvas. Existing `frequency` values therefore produce a different texture scale now, and both `frequency` and `lightness` may need to be retuned for the desired appearance.
+
 ## Lifecycle
 
 - `debug()` — reads back the luminance field texture (`{ columns, rows, sample: number[] }`).
