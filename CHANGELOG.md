@@ -6,50 +6,49 @@ All notable changes to this project are documented in this file.
 
 ### Fixed
 
-- Restored the correct renderer dependency, `0.3.0` instead of `0.2.0`, so viewport remeasurement from core `0.2.0` is resolved.
-- React `0.3.0` remains published with a stale renderer dependency and cannot be modified; consumers pinned to `0.3.0` should move to `0.4.0`.
+- Fixed the package dependency chain: React now uses renderer `0.3.0`, which brings in core `0.2.0` and its viewport-resize fixes. React `0.3.0` still resolves renderer `0.2.0` and core `0.1.0`.
+- React `0.3.0` is already published and cannot be changed. Upgrade to React `0.4.0` to get the corrected dependency chain.
 
 ## [core 0.2.0] - 2026-10-06
 
 ### Fixed
 
-- Canvas dimensions are remeasured from `visualViewport` and after `orientationchange`, because Safari can report an intermediate container size after rotating.
-- Canvas dimensions are remeasured when the page returns to the foreground.
-- Settings changes force a repaint while paused or when `prefers-reduced-motion` has stopped the animation loop.
-- Resize listeners and the orientation timer are removed when the engine host stops.
+- Recalculate canvas dimensions on `visualViewport` resize and after `orientationchange`, avoiding Safari's temporary intermediate size after rotation.
+- Remeasure the canvas when the page returns to the foreground.
+- Apply settings changes even while the shader is paused or reduced motion has stopped its animation loop.
+- Remove viewport listeners and the pending orientation timer when the engine stops.
 
 ## [renderer 0.3.0] - 2026-10-06
 
 ### Changed
 
-- Updated the core dependency to `0.2.0` to use viewport-aware canvas remeasurement.
+- Updated the core dependency to `0.2.0`, so renderer users receive the canvas viewport-resize fixes.
 
 ## [react 0.3.0] - 2026-10-06
 
 ### Added
 
-- Added `AsciiShaderBackground` for full-viewport shader backgrounds.
-- Added an iOS top bleed of `max(env(safe-area-inset-top, 0px), 62px)` because Safari can return a zero safe-area inset in some states.
-- Stretched the layer to its parent with `top`, `bottom`, and `height: auto`, covering documents of any length without adding page scroll.
+- Added `AsciiShaderBackground` to place the shader behind page content.
+- Extend the background at least `62px` above its parent (`max(env(safe-area-inset-top, 0px), 62px)`) to cover the iOS status-bar area even when Safari reports a zero safe-area inset.
+- Stretch the layer between the parent's top and bottom, so it follows growing page content without a fixed bottom runway or extra page scroll.
 
 ### Breaking Changes
 
-- `AsciiShaderBackground` requires a `position: relative` parent.
-- The background no longer uses `scrollTo` workarounds; page scrolling is not required.
+- The parent must be `position: relative` and provide the area the background should cover.
+- The background no longer requires a `scrollTo` workaround or forced page scrolling.
 
 ## [renderer 0.2.0] - 2026-10-05
 
 ### Changed
 
-- Texture coordinates now use a fixed pixel scale through the shader constant `WORLD_SCALE = 1600`.
-- Shader detail size no longer depends on screen dimensions.
-- The API is unchanged, and cursor behavior is preserved.
+- Texture detail now uses a consistent pixel scale instead of changing with screen dimensions.
+- The public API and cursor behavior are unchanged.
 
 ### Fixed
 
-- The texture is cropped to the visible canvas area instead of being stretched to fill it.
-- Detail on narrow screens is no longer several times finer than on wide screens.
+- Keep the texture's proportions by cropping it to the canvas instead of stretching it.
+- Prevent texture detail from becoming excessively fine on narrow screens.
 
 ### Breaking Changes
 
-- The visual output changes despite no API change. Recheck and retune `frequency` and `lightness` values configured for earlier versions.
+- The visual output changes even though the API does not. Recheck and retune existing `frequency` and `lightness` settings.
