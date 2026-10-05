@@ -26,6 +26,6 @@ input {
 
 .demo {
   position: relative;
-  min-height: 100lvh;
+  min-height: 100svh;
   background: #000;
 }
