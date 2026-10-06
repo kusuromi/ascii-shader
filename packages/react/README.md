@@ -17,7 +17,7 @@ import { AsciiShaderBackground } from "@kusuromi/ascii-shader-react";
 
 export function Hero() {
   return (
-    <section style={{ position: "relative", minHeight: "100lvh" }}>
+    <section style={{ minHeight: "100dvh" }}>
       <AsciiShaderBackground />
       <div style={{ position: "relative", zIndex: 1 }}>
         Your content
@@ -27,9 +27,7 @@ export function Hero() {
 }
 ```
 
-`AsciiShaderBackground` renders an absolute, pointer-transparent shader layer with a top bleed of `max(env(safe-area-inset-top, 0px), 62px)`. Its `top` and `bottom` insets with `height: auto` stretch it from the top bleed to the bottom of its containing block; there is no fixed bottom runway or page-scroll offset. The layout is static and does not depend on JavaScript toggling a class. Give the parent that should define the background area `position: relative` and a meaningful height (for example, `min-height: 100lvh`); normal-flow content can make that parent taller than the viewport.
-
-The parent must establish the intended containing block. Flex and grid parents do not inherently disable the absolute layer's explicit `top`/`bottom` sizing, but make sure the positioned parent's box has the height you want the shader to cover. An ancestor with `overflow: hidden` clips anything outside its bounds, including the 62px top bleed; it does not ignore `bottom` or collapse the layer's height. Avoid that clipping when the shader must extend into the safe area. If you need a viewport-fixed background independent of the content height, or a scroll-driven effect, use a `position: fixed` layer for that use case. `AsciiShader` remains available for shader instances embedded in other layouts.
+`AsciiShaderBackground` renders a fixed, pointer-transparent layer covering the viewport (`100dvh`). It does not depend on the height or positioning of its parent and does not add page scroll. On Safari, the layer follows the dynamic viewport as browser controls expand and collapse, so its height can resize with the visible area. For safe-area edge-to-edge rendering, the host page must opt in via its viewport meta tag (`viewport-fit=cover`). A React component cannot change page-wide viewport metadata or control Safari's browser chrome. `AsciiShader` remains available for shader instances embedded in other layouts.
 
 ## With controls
 
@@ -46,7 +44,7 @@ export function Demo() {
     usePersistentAsciiSettings();
 
   return (
-    <main style={{ position: "relative", minHeight: "100lvh" }}>
+    <main style={{ minHeight: "100dvh" }}>
       <AsciiShaderBackground {...settings} />
       <AsciiControls
         value={settings}

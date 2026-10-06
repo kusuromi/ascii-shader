@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## [react 0.5.0] - 2026-10-06
+
+### Changed
+
+- `AsciiShaderBackground` is now fixed to the viewport and sized with `100dvh`, so it follows the visible screen as browser controls change.
+- The background no longer depends on the height or positioning of its parent.
+
+### Breaking Changes
+
+- `AsciiShaderBackground` now covers the viewport instead of a parent section. Use `AsciiShader` with a custom layout when you need a background limited to part of a page.
+
 ## [react 0.4.0] - 2026-10-06
 
 ### Fixed
