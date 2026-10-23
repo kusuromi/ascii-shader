@@ -12,7 +12,7 @@ npm install @kusuromi/ascii-shader-core
 
 - **`createAsciiEngineHost`** — the animation driver: requestAnimationFrame loop (60 fps), resize handling with device-pixel-ratio (capped at 2), pointer state with smoothing (`cursor.follow`), `prefers-reduced-motion` support, pause outside the viewport / on hidden tabs, and the WebGL context-loss/restore lifecycle.
 - **Settings** — `DEFAULT_ASCII_SETTINGS`, `SETTING_LIMITS`, `normalizeAsciiSettings()` with clamping, `ASCII_GLYPHS`.
-- **Types** — `AsciiSettings`, `AsciiCursorSettings`, `AsciiPointerState`, host frame/options types.
+- **Types** — `AsciiSettings`, `AsciiCursorSettings`, `AsciiRippleSettings`, `AsciiPointerState`, `AsciiRipple`, `AsciiVignetteSettings`, `AsciiVignetteSides`, host frame/options types.
 
 ## Usage (raw, without React)
 
@@ -23,7 +23,7 @@ import { createAsciiEngineHost } from "@kusuromi/ascii-shader-core";
 import { createAsciiShaderRenderer } from "@kusuromi/ascii-shader-renderer";
 
 const canvas = document.querySelector("canvas");
-const gl = canvas?.getContext("webgl");
+const gl = canvas?.getContext("webgl2");
 if (!gl) throw new Error("WebGL unavailable");
 
 const renderer = createAsciiShaderRenderer(gl);
@@ -41,6 +41,7 @@ const host = createAsciiEngineHost({
       dpr: frame.dpr,
       settings: frame.settings,
       pointer: { currentX: frame.pointer.currentX, currentY: frame.pointer.currentY },
+      ripples: frame.ripples,
     }),
   context: {
     element: canvas,

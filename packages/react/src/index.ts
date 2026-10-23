@@ -14,6 +14,8 @@ export {
   SETTING_LIMITS,
   normalizeAsciiSettings,
   type AsciiCursorSettings,
+  type AsciiRippleSettings,
   type AsciiSettings,
+  type AsciiVignetteSettings,
   type PartialAsciiSettings,
 } from "@kusuromi/ascii-shader-core";

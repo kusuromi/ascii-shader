@@ -1,8 +1,8 @@
-import type { AsciiSettings } from "@kusuromi/ascii-shader-core";
+import { MAX_RIPPLES, type AsciiRipple, type AsciiSettings } from "@kusuromi/ascii-shader-core";
 
-const VERTEX_SHADER = /* glsl */ `
-attribute vec2 aPos;
-varying vec2 vUv;
+const VERTEX_SHADER = /* glsl */ `#version 300 es
+in vec2 aPos;
+out vec2 vUv;
 
 void main() {
   vUv = vec2(aPos.x * 0.5 + 0.5, 0.5 - aPos.y * 0.5);
@@ -12,12 +12,15 @@ void main() {
 
 // Pass 1: computes the per-cell luminance field on the GPU, one pixel per cell.
 // This shader is the single source of truth for the field formula.
-const FIELD_FRAGMENT_SHADER = /* glsl */ `
+const FIELD_FRAGMENT_SHADER = /* glsl */ `#version 300 es
 precision highp float;
+
+out vec4 fragColor;
 
 uniform vec2 uResolution;
 uniform float uCellSize;
 #define WORLD_SCALE 1600.0
+#define MAX_RIPPLES ${MAX_RIPPLES}
 uniform float uTime;
 uniform float uFrequency;
 uniform float uLightness;
@@ -26,6 +29,19 @@ uniform vec2 uCursor;
 uniform float uCursorRadius;
 uniform float uCursorStrength;
 uniform float uCursorEnabled;
+// xy: click origin in CSS px, z: start time on the shader clock.
+uniform vec3 uRipples[MAX_RIPPLES];
+uniform float uRippleStrength;
+uniform float uRippleSpeed;
+uniform float uRippleWavelength;
+uniform float uRippleWidth;
+uniform float uRippleDecay;
+uniform float uVignetteActive;
+// Band width in CSS px and glyph level at the very edge.
+uniform float uVignetteRadius;
+uniform float uVignetteEdgeLevel;
+// x: top, y: right, z: bottom, w: left; 1 when the vignette applies to that side.
+uniform vec4 uVignetteSides;
 
 float hash21(vec2 p) {
   // mod 289 keeps lattice coordinates bounded: they grow with time,
@@ -65,6 +81,18 @@ float fbm(vec2 p) {
   return value;
 }
 
+float ripple(vec2 p, vec3 source) {
+  float age = uTime - source.z;
+  if (age < 0.0) return 0.0;
+
+  float front = age * uRippleSpeed * min(uResolution.x, uResolution.y);
+  float delta = distance(p, source.xy) - front;
+  float band = exp(-(delta * delta) / (uRippleWidth * uRippleWidth));
+  float fade = exp(-age * uRippleDecay);
+
+  return cos(delta / uRippleWavelength * 6.28318530718) * band * fade;
+}
+
 void main() {
   vec2 worldPx = gl_FragCoord.xy * uCellSize;
   vec2 uv = worldPx / WORLD_SCALE;
@@ -73,22 +101,41 @@ void main() {
   vec2 cursorDelta = worldPx - cursorPx;
   float cursorGlow = uCursorEnabled * exp(-dot(cursorDelta, cursorDelta) / (uCursorRadius * uCursorRadius));
 
+  float rippleSum = 0.0;
+  for (int index = 0; index < MAX_RIPPLES; index += 1) {
+    rippleSum += ripple(worldPx, uRipples[index]);
+  }
+
   float waveA = fbm(vec2(uv.x * uFrequency * 2.8 + uTime * 0.42, uv.y * uFrequency * 1.8 - uTime * 0.34));
   float waveB = fbm(vec2(uv.x * uFrequency * 5.2 - uTime * 0.2, uv.y * uFrequency * 3.4 + uTime * 0.26));
   float sweep = sin((uv.x * 2.2 - uv.y * 1.5 + uTime * 0.18) * 6.28318530718) * 0.5 + 0.5;
 
-  float luminance = waveA * 0.58 + waveB * 0.31 + sweep * 0.11 + cursorGlow * uCursorStrength;
+  float luminance = waveA * 0.58 + waveB * 0.31 + sweep * 0.11 + cursorGlow * uCursorStrength + rippleSum * uRippleStrength;
   luminance = pow(clamp(luminance * uLightness - 0.09, 0.0, 1.0), uContrast);
 
-  gl_FragColor = vec4(luminance, 0.0, 0.0, 1.0);
+  if (uVignetteActive > 0.5) {
+    float topDistance = uVignetteSides.x > 0.5 ? worldPx.y : 1e9;
+    float rightDistance = uVignetteSides.y > 0.5 ? uResolution.x - worldPx.x : 1e9;
+    float bottomDistance = uVignetteSides.z > 0.5 ? uResolution.y - worldPx.y : 1e9;
+    float leftDistance = uVignetteSides.w > 0.5 ? worldPx.x : 1e9;
+    float edgeDistance = min(min(topDistance, rightDistance), min(bottomDistance, leftDistance));
+
+    float edgeT = clamp(edgeDistance / max(uVignetteRadius, 1.0), 0.0, 1.0);
+    float edgeFade = smoothstep(0.0, 1.0, edgeT);
+    // Glyphs taper toward the sparse end of the ramp near the edge instead of cutting off.
+    luminance *= mix(uVignetteEdgeLevel, 1.0, edgeFade);
+  }
+
+  fragColor = vec4(luminance, 0.0, 0.0, 1.0);
 }
 `;
 
 // Pass 2: samples the field texture and draws the glyph for each cell.
-const COMPOSITE_FRAGMENT_SHADER = /* glsl */ `
+const COMPOSITE_FRAGMENT_SHADER = /* glsl */ `#version 300 es
 precision highp float;
 
-varying vec2 vUv;
+in vec2 vUv;
+out vec4 fragColor;
 
 uniform vec2 uGridSize;
 uniform float uGlyphCount;
@@ -105,7 +152,7 @@ void main() {
   vec2 pLocal = fract(cellPos);
 
   vec2 fieldUv = (cellIndex + 0.5) / uGridSize;
-  float luminance = texture2D(uField, fieldUv).r;
+  float luminance = texture(uField, fieldUv).r;
 
   int id = int(floor(min(luminance * uGlyphCount, uGlyphCount - 0.001)));
 
@@ -119,15 +166,17 @@ void main() {
     uInsetBase + pLocal.x * uInsetScale,
     uInsetBase + pLocal.y * uInsetScale
   );
-  float cover = texture2D(uGlyphAtlas, vec2((float(id) + inset.x) / uAtlasCols, inset.y)).a;
+  float cover = texture(uGlyphAtlas, vec2((float(id) + inset.x) / uAtlasCols, inset.y)).a;
 
   alpha = luminance < 0.035 ? 0.0 : alpha * cover;
 
-  gl_FragColor = vec4(vec3(shade / 255.0), alpha);
+  fragColor = vec4(vec3(shade / 255.0), alpha);
 }
 `;
 
 const ATLAS_COLS = 16;
+// Far-past start time: the fade term drives unused ripple slots to zero.
+const INACTIVE_RIPPLE_START = -1e6;
 const ATLAS_FONT = (cellSize: number, dpr: number) =>
   `700 ${Math.max(10, cellSize * 0.94) * dpr}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
 
@@ -138,9 +187,10 @@ export type AsciiShaderFrame = {
   dpr: number;
   settings: AsciiSettings;
   pointer: { currentX: number; currentY: number };
+  ripples?: readonly AsciiRipple[];
 };
 
-function compileShader(gl: WebGLRenderingContext, type: number, source: string) {
+function compileShader(gl: WebGL2RenderingContext, type: number, source: string) {
   const shader = gl.createShader(type);
   if (!shader) throw new Error("Unable to create shader");
   gl.shaderSource(shader, source);
@@ -153,7 +203,7 @@ function compileShader(gl: WebGLRenderingContext, type: number, source: string) 
   return shader;
 }
 
-function linkProgram(gl: WebGLRenderingContext, vertexShader: WebGLShader, fragmentShader: WebGLShader) {
+function linkProgram(gl: WebGL2RenderingContext, vertexShader: WebGLShader, fragmentShader: WebGLShader) {
   const program = gl.createProgram();
   if (!program) throw new Error("Unable to create program");
   gl.attachShader(program, vertexShader);
@@ -166,7 +216,7 @@ function linkProgram(gl: WebGLRenderingContext, vertexShader: WebGLShader, fragm
   return program;
 }
 
-function getUniforms(gl: WebGLRenderingContext, program: WebGLProgram, names: readonly string[]) {
+function getUniforms(gl: WebGL2RenderingContext, program: WebGLProgram, names: readonly string[]) {
   const locations: Record<string, WebGLUniformLocation> = {};
   for (const name of names) {
     const location = gl.getUniformLocation(program, name);
@@ -177,7 +227,7 @@ function getUniforms(gl: WebGLRenderingContext, program: WebGLProgram, names: re
 }
 
 function buildGlyphAtlas(
-  gl: WebGLRenderingContext,
+  gl: WebGL2RenderingContext,
   chars: string,
   cellSize: number,
   dpr: number,
@@ -241,7 +291,7 @@ function buildGlyphAtlas(
   };
 }
 
-export function createAsciiShaderRenderer(gl: WebGLRenderingContext) {
+export function createAsciiShaderRenderer(gl: WebGL2RenderingContext) {
   const vertexShader = compileShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
   const fieldFragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, FIELD_FRAGMENT_SHADER);
   const compositeFragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, COMPOSITE_FRAGMENT_SHADER);
@@ -276,6 +326,16 @@ export function createAsciiShaderRenderer(gl: WebGLRenderingContext) {
     "uCursorRadius",
     "uCursorStrength",
     "uCursorEnabled",
+    "uRipples",
+    "uRippleStrength",
+    "uRippleSpeed",
+    "uRippleWavelength",
+    "uRippleWidth",
+    "uRippleDecay",
+    "uVignetteRadius",
+    "uVignetteActive",
+    "uVignetteEdgeLevel",
+    "uVignetteSides",
   ] as const);
   const compositeUniforms = getUniforms(gl, compositeProgram, [
     "uGridSize",
@@ -287,7 +347,6 @@ export function createAsciiShaderRenderer(gl: WebGLRenderingContext) {
     "uInsetBase",
     "uInsetScale",
   ] as const);
-
   gl.useProgram(compositeProgram);
   gl.uniform1i(compositeUniforms.uField, 1);
   gl.uniform1i(compositeUniforms.uGlyphAtlas, 0);
@@ -299,6 +358,8 @@ export function createAsciiShaderRenderer(gl: WebGLRenderingContext) {
   let currentInsetBase = 0;
   let currentInsetScale = 0;
   let currentAtlasKey = "";
+
+  const rippleData = new Float32Array(MAX_RIPPLES * 3);
 
   const framebuffer = gl.createFramebuffer();
   let fieldTexture: WebGLTexture | null = null;
@@ -354,6 +415,7 @@ export function createAsciiShaderRenderer(gl: WebGLRenderingContext) {
   return {
     render(frame: AsciiShaderFrame) {
       const { width, height, dpr, time, settings, pointer } = frame;
+      const ripples = settings.ripple.enabled ? (frame.ripples ?? []) : [];
       const chars = settings.glyphs.slice(-Math.round(settings.glyphCount));
 
       const atlasKey = `${chars}|${settings.cellSize}|${dpr}`;
@@ -377,6 +439,13 @@ export function createAsciiShaderRenderer(gl: WebGLRenderingContext) {
       const rows = Math.ceil(height / settings.cellSize);
       ensureField(columns, rows);
 
+      for (let index = 0; index < MAX_RIPPLES; index += 1) {
+        const ripple = ripples[index];
+        rippleData[index * 3] = ripple ? ripple.x * width : 0;
+        rippleData[index * 3 + 1] = ripple ? ripple.y * height : 0;
+        rippleData[index * 3 + 2] = ripple ? ripple.startTime : INACTIVE_RIPPLE_START;
+      }
+
       // Pass 1: luminance field, one pixel per cell.
       gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
       gl.viewport(0, 0, columns, rows);
@@ -384,6 +453,28 @@ export function createAsciiShaderRenderer(gl: WebGLRenderingContext) {
       bindQuad(fieldPosition);
       gl.disable(gl.BLEND);
       gl.uniform2f(fieldUniforms.uResolution, width, height);
+      gl.uniform3fv(fieldUniforms.uRipples, rippleData);
+      gl.uniform1f(fieldUniforms.uRippleStrength, settings.ripple.strength);
+      gl.uniform1f(fieldUniforms.uRippleSpeed, settings.ripple.speed);
+      gl.uniform1f(fieldUniforms.uRippleWavelength, settings.ripple.wavelength);
+      gl.uniform1f(fieldUniforms.uRippleWidth, settings.ripple.width);
+      gl.uniform1f(fieldUniforms.uRippleDecay, settings.ripple.decay);
+      gl.uniform1f(
+        fieldUniforms.uVignetteRadius,
+        (settings.vignette.radius / 100) * Math.min(width, height),
+      );
+      const { sides } = settings.vignette;
+      const hasSide = sides.top || sides.right || sides.bottom || sides.left;
+      const vignetteActive = settings.vignette.enabled && hasSide;
+      gl.uniform1f(fieldUniforms.uVignetteActive, vignetteActive ? 1 : 0);
+      gl.uniform1f(fieldUniforms.uVignetteEdgeLevel, settings.vignette.edgeLevel);
+      gl.uniform4f(
+        fieldUniforms.uVignetteSides,
+        sides.top ? 1 : 0,
+        sides.right ? 1 : 0,
+        sides.bottom ? 1 : 0,
+        sides.left ? 1 : 0,
+      );
       gl.uniform1f(fieldUniforms.uCellSize, settings.cellSize);
       gl.uniform1f(fieldUniforms.uTime, time);
       gl.uniform1f(fieldUniforms.uFrequency, settings.frequency);

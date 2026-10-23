@@ -1,8 +1,9 @@
-import type { AsciiPointerState, AsciiSettings } from "./types";
+import type { AsciiPointerState, AsciiRipple, AsciiSettings } from "./types";
 
 export const MAX_DEVICE_PIXEL_RATIO = 2;
 export const TARGET_FRAME_RATE = 60;
 export const CONTEXT_RESTORE_TIMEOUT_MS = 5000;
+export const MAX_RIPPLES = 4;
 const ORIENTATION_RESIZE_DELAY_MS = 250;
 
 export type AsciiHostFrame = {
@@ -11,6 +12,8 @@ export type AsciiHostFrame = {
   time: number;
   settings: AsciiSettings;
   pointer: AsciiPointerState;
+  /** Most recent clicks, oldest first. At most `MAX_RIPPLES` entries. */
+  ripples: readonly AsciiRipple[];
 };
 
 export type AsciiEngineHostOptions = {
@@ -45,6 +48,7 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
   let frameId: number | null = null;
   let lastAnimationTime = globalThis.performance.now();
   let animationTime = 0;
+  const ripples: AsciiRipple[] = [];
   let isIntersecting = true;
   let documentVisible = !document.hidden;
   let reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -102,6 +106,7 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
       time: animationTime,
       settings,
       pointer,
+      ripples,
     });
   };
 
@@ -175,8 +180,34 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
     requestPaint();
   };
 
-  const onPointerMove = (event: PointerEvent) => updatePointer(event.clientX, event.clientY);
-  const onPointerDown = (event: PointerEvent) => updatePointer(event.clientX, event.clientY);
+  // Interaction inside UI marked with `data-ascii-ignore-pointer` (for example the settings panel) does not reach the shader.
+  const isIgnoredTarget = (target: EventTarget | null) =>
+    target instanceof Element && target.closest("[data-ascii-ignore-pointer]") !== null;
+
+  const onPointerMove = (event: PointerEvent) => {
+    if (isIgnoredTarget(event.target)) return;
+    updatePointer(event.clientX, event.clientY);
+  };
+  const onPointerDown = (event: PointerEvent) => {
+    if (isIgnoredTarget(event.target)) return;
+    updatePointer(event.clientX, event.clientY);
+  };
+
+  const onClick = (event: MouseEvent) => {
+    if (isIgnoredTarget(event.target)) return;
+    // Keyboard-activated clicks have detail 0 and no meaningful position.
+    if (event.detail === 0) return;
+    if (reducedMotion || options.getPaused() || !options.getSettings().ripple.enabled) return;
+    if (elementBounds.width <= 0 || elementBounds.height <= 0) return;
+
+    ripples.push({
+      x: (event.clientX - elementBounds.left) / elementBounds.width,
+      y: (event.clientY - elementBounds.top) / elementBounds.height,
+      startTime: animationTime,
+    });
+    if (ripples.length > MAX_RIPPLES) ripples.shift();
+    requestPaint();
+  };
 
   const resizeObserver = new ResizeObserver(([entry]) => {
     if (!entry) return;
@@ -259,6 +290,7 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
   document.addEventListener("visibilitychange", onVisibilityChange);
   window.addEventListener("pointermove", onPointerMove, { passive: true });
   window.addEventListener("pointerdown", onPointerDown, { passive: true });
+  window.addEventListener("click", onClick);
   window.addEventListener("orientationchange", onOrientationChange);
   if (visualViewport) {
     visualViewport.addEventListener("resize", onVisualViewportResize);
@@ -290,6 +322,7 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("click", onClick);
       window.removeEventListener("orientationchange", onOrientationChange);
       if (visualViewport) {
         visualViewport.removeEventListener("resize", onVisualViewportResize);

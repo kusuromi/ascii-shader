@@ -3,3 +3,6 @@ dist
 *.tsbuildinfo
 .DS_Store
 .smoke-font
+packages/renderer/test/.harness.js
+packages/renderer/test-results
+packages/renderer/playwright-report

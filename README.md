@@ -5,7 +5,7 @@ Monorepo for an animated, interactive ASCII shader rendered with WebGL and its R
 ## Packages
 
 - [`@kusuromi/ascii-shader-core`](packages/core) — engine host with animation loop, resize and pointer handling.
-- [`@kusuromi/ascii-shader-renderer`](packages/renderer) — two-pass WebGL 1 pipeline with luminance and glyph passes.
+- [`@kusuromi/ascii-shader-renderer`](packages/renderer) — two-pass WebGL 2 pipeline with luminance and glyph passes.
 - [`@kusuromi/ascii-shader-react`](packages/react) — React component with optional controls and persistent settings.
 - [`apps/demo`](apps/demo) — Vite demo application.
 

@@ -2,6 +2,27 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- `serializeAsciiSettings(settings)` in core returns only the settings that differ from the defaults, rounded for copying.
+- A "CODE" panel next to "SETTINGS" has an Install section (npm, pnpm, yarn, bun) and a Code section that shows the current settings as a React component (`"use client"` included) or JSON. The code can be copied from the panel and from its collapsed bar. The code panel is wider than the settings panel, and the code is syntax-highlighted.
+- Click ripples: a `ripple.enabled` setting (on by default) sends a ripple through the field on each click. The host keeps the four most recent ripples and passes them to the renderer as `ripples`.
+- Ripple settings in the panel and in `ripple`: `enabled`, `strength`, `speed` (fraction of the shorter screen side per second), `wavelength` and `width` (CSS px), and `decay`.
+- Edge vignette: a `vignette.enabled` setting (off by default) dims glyphs toward the screen edges with a smooth fade. `vignette.radius` sets the band width (% of the shorter screen side), `vignette.edgeLevel` sets how dim the glyphs get at the very edge, and `vignette.sides` chooses the edges (`top`, `right`, `bottom`, `left`, all on by default). The panel has a "Vignette" section for these settings.
+- Playwright tests for the vignette run against the real shader in headless Chrome (`npm test -w @kusuromi/ascii-shader-renderer`).
+
+### Changed
+
+- The settings and code panels grow with their content and stop at the screen edge with a 12px margin, instead of always filling the height.
+- Pointer movement and clicks over the settings panel no longer move the cursor or create ripples. Elements marked with `data-ascii-ignore-pointer` are excluded.
+- The settings panel is 12px from the screen edges and fills the height down to the bottom edge.
+- The vignette transition is gradual: glyphs near the edge taper toward the sparser characters of the ramp instead of cutting off.
+
+
+- The `AsciiSettings` type now includes `ripple` and `vignette`. Code that builds full `AsciiSettings` objects by hand must add them; `normalizeAsciiSettings` fills in the defaults.
+
 ## [react 0.5.0] - 2026-10-06
 
 ### Changed

@@ -4,11 +4,14 @@ import {
   createAsciiEngineHost,
   normalizeAsciiSettings,
   type AsciiSettings,
+  type PartialAsciiVignetteSettings,
 } from "@kusuromi/ascii-shader-core";
 import { createAsciiShaderRenderer } from "@kusuromi/ascii-shader-renderer";
 
-export type AsciiShaderProps = Partial<Omit<AsciiSettings, "cursor">> & {
+export type AsciiShaderProps = Partial<Omit<AsciiSettings, "cursor" | "ripple" | "vignette">> & {
   cursor?: Partial<AsciiSettings["cursor"]>;
+  ripple?: Partial<AsciiSettings["ripple"]>;
+  vignette?: PartialAsciiVignetteSettings;
   paused?: boolean;
   className?: string;
   style?: CSSProperties;
@@ -16,6 +19,8 @@ export type AsciiShaderProps = Partial<Omit<AsciiSettings, "cursor">> & {
 
 export function AsciiShader({
   cursor,
+  ripple,
+  vignette,
   paused = false,
   className,
   style,
@@ -43,8 +48,10 @@ export function AsciiShader({
         contrast,
         opacity,
         cursor,
+        ripple,
+        vignette,
       }),
-    [glyphs, glyphCount, cellSize, frequency, speed, lightness, contrast, opacity, cursor],
+    [glyphs, glyphCount, cellSize, frequency, speed, lightness, contrast, opacity, cursor, ripple, vignette],
   );
 
   const settingsRef = useRef(resolvedSettings);
@@ -71,7 +78,7 @@ export function AsciiShader({
     const createRenderer = () => {
       shaderRenderer?.dispose();
       shaderRenderer = null;
-      const gl = canvas?.getContext("webgl");
+      const gl = canvas?.getContext("webgl2");
       if (!gl) return;
       try {
         shaderRenderer = createAsciiShaderRenderer(gl);
@@ -110,6 +117,7 @@ export function AsciiShader({
             dpr: frame.dpr,
             settings: frame.settings,
             pointer: { currentX: frame.pointer.currentX, currentY: frame.pointer.currentY },
+            ripples: frame.ripples,
           });
         },
         context: {
