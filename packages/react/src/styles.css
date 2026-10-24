@@ -5,17 +5,6 @@
   background: #FFFFFF;
 }
 
-/* Two open panels no longer fit side by side: stack them and split the height. */
-@media (max-width: 697px) {
-  .ascii-controls-dock--both .ascii-controls {
-    max-height: calc((100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 36px) / 2);
-  }
-
-  .ascii-controls--code {
-    width: min(282px, calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 24px));
-  }
-}
-
 @media (min-width: 2200px) and (min-height: 1000px) {
   .ascii-controls-dock {
     zoom: 1.25;
@@ -115,7 +104,7 @@
   height: 48px;
   align-items: center;
   gap: 12px;
-  padding: 12px 11px;
+  padding: 12px 12px 11px;
   color: #fff;
   background: #000;
   border: 1px solid #333333;
@@ -354,7 +343,32 @@
   line-height: 16px;
   white-space: pre-wrap;
   word-break: break-word;
-  user-select: all;
+  -webkit-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+
+.ascii-controls input,
+.ascii-controls textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Chrome of the panels: labels and buttons are not text content, so they never take part in selection. */
+.ascii-controls__header,
+.ascii-controls__collapsed,
+.ascii-controls__card-head,
+.ascii-controls__card-file,
+.ascii-controls__group-label,
+.ascii-controls__tab,
+.ascii-controls__icon-button,
+.ascii-controls__row,
+.ascii-controls__switch-cell,
+.ascii-slider,
+.ascii-switch,
+.ascii-number-field {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .ascii-controls__code code {
@@ -639,5 +653,34 @@
   .ascii-controls *,
   .ascii-controls__collapsed * {
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Narrow screens: panels stack in a full-width column; an open panel takes half of the free height. */
+@media (max-width: 697px) {
+  .ascii-controls-dock {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: none;
+  }
+
+  .ascii-controls-dock--open {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+  .ascii-controls-dock .ascii-controls {
+    width: 100%;
+    max-height: none;
+    min-height: 0;
+    flex: 1 1 0;
+  }
+
+  .ascii-controls-dock .ascii-controls__collapsed {
+    width: 100%;
+    flex: none;
   }
 }

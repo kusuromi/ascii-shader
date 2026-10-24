@@ -33,3 +33,34 @@ input {
   height: 100dvh;
   background: #000;
 }
+
+@media (max-width: 697px) {
+  .demo {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding:
+      calc(12px + env(safe-area-inset-top, 0px))
+      calc(12px + env(safe-area-inset-right, 0px))
+      calc(12px + env(safe-area-inset-bottom, 0px))
+      calc(12px + env(safe-area-inset-left, 0px));
+  }
+
+  .demo__shader {
+    position: relative !important;
+    inset: auto !important;
+    flex: 1 1 0;
+    width: auto !important;
+    min-height: 0;
+    height: auto !important;
+    border: 1px solid #333;
+    border-radius: 8px;
+  }
+
+  .demo__controls {
+    position: static !important;
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+  }
+}

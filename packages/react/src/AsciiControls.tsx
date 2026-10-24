@@ -1,7 +1,14 @@
 import { NumberField } from "@base-ui/react/number-field";
 import { Slider } from "@base-ui/react/slider";
 import { Switch } from "@base-ui/react/switch";
-import { useEffect, useId, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { SETTING_LIMITS, serializeAsciiSettings, type AsciiSettings } from "@kusuromi/ascii-shader-core";
 import { formatJsonSnippet, formatReactSnippet } from "./codeSnippet";
 import { PackageIcon } from "./CodeIcons";
@@ -226,6 +233,8 @@ const INSTALL_COMMANDS: Record<PackageManager, string> = {
   bun: `bun add ${PACKAGE_NAME}`,
 };
 
+const NARROW_SCREEN_QUERY = "(max-width: 697px)";
+
 export function AsciiControls({
   value,
   onValueChange,
@@ -234,11 +243,11 @@ export function AsciiControls({
   style,
 }: AsciiControlsProps) {
   const [codeOpen, setCodeOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [codeFormat, setCodeFormat] = useState<CodeFormat>("react");
   const [packageManager, setPackageManager] = useState<PackageManager>("npm");
   const [copiedKey, setCopiedKey] = useState<"code" | "install" | null>(null);
-  const isNarrowScreen = () => typeof window !== "undefined" && window.matchMedia("(max-width: 697px)").matches;
+  const isNarrowScreen = () => window.matchMedia(NARROW_SCREEN_QUERY).matches;
   const openCode = () => {
     setCodeOpen(true);
     if (isNarrowScreen()) setSettingsOpen(false);
@@ -283,11 +292,12 @@ export function AsciiControls({
     });
   };
 
-
   const codeText = useMemo(() => {
     const changes = serializeAsciiSettings(value);
     return codeFormat === "react" ? formatReactSnippet(changes) : formatJsonSnippet(changes);
   }, [value, codeFormat]);
+
+  const codeHighlight = useMemo(() => highlightCode(codeText), [codeText]);
 
   useEffect(() => {
     if (!copiedKey) return;
@@ -409,7 +419,7 @@ export function AsciiControls({
           </div>
           <div className="ascii-controls__card-body">
             <pre className="ascii-controls__code">
-              <code>{highlightCode(codeText)}</code>
+              <code>{codeHighlight}</code>
             </pre>
           </div>
         </section>
@@ -449,27 +459,29 @@ export function AsciiControls({
     <aside className="ascii-controls" aria-label="ASCII shader settings">
       <div className="ascii-controls__header">
         <span className="ascii-controls__title">SETTINGS</span>
-        {onReset ? (
+        <div className="ascii-controls__collapsed-actions">
+          {onReset ? (
+            <button
+              type="button"
+              onClick={onReset}
+              className="ascii-controls__icon-button"
+              aria-label="Reset settings"
+              title="Reset settings"
+            >
+              <ResetIcon className="ascii-controls__icon--reset" />
+            </button>
+          ) : null}
+
           <button
             type="button"
-            onClick={onReset}
+            onClick={() => setSettingsOpen(false)}
             className="ascii-controls__icon-button"
-            aria-label="Reset settings"
-            title="Reset settings"
+            aria-label="Close settings"
+            title="Close settings"
           >
-            <ResetIcon className="ascii-controls__icon--reset" />
+            <MinusIcon className="ascii-controls__icon--minus" />
           </button>
-        ) : null}
-
-        <button
-          type="button"
-          onClick={() => setSettingsOpen(false)}
-          className="ascii-controls__icon-button"
-          aria-label="Close settings"
-          title="Close settings"
-        >
-          <MinusIcon className="ascii-controls__icon--minus" />
-        </button>
+        </div>
       </div>
 
       <div className="ascii-controls__content">

@@ -5,6 +5,8 @@ export const TARGET_FRAME_RATE = 60;
 export const CONTEXT_RESTORE_TIMEOUT_MS = 5000;
 export const MAX_RIPPLES = 4;
 const ORIENTATION_RESIZE_DELAY_MS = 250;
+// How long a click that started on UI keeps being ignored if no click event follows.
+const CLICK_GUARD_TIMEOUT_MS = 700;
 
 export type AsciiHostFrame = {
   dimensions: { width: number; height: number };
@@ -183,18 +185,56 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
   // Interaction inside UI marked with `data-ascii-ignore-pointer` (for example the settings panel) does not reach the shader.
   const isIgnoredTarget = (target: EventTarget | null) =>
     target instanceof Element && target.closest("[data-ascii-ignore-pointer]") !== null;
+  // React can replace the pressed node before the click bubbles, so the path is checked as well.
+  const isIgnoredEvent = (event: Event) =>
+    event.composedPath().some((node) => isIgnoredTarget(node)) || isIgnoredTarget(event.target);
+
+  // A pointer that started on UI stays ignored until it is released: the layout may shift under it
+  // (opening or closing a panel) and later events would target the shader instead.
+  const uiPointers = new Set<number>();
+  let ignoreNextClick = false;
+  let ignoreClickTimer: number | null = null;
+  const clearIgnoreClick = () => {
+    ignoreNextClick = false;
+    if (ignoreClickTimer !== null) {
+      window.clearTimeout(ignoreClickTimer);
+      ignoreClickTimer = null;
+    }
+  };
 
   const onPointerMove = (event: PointerEvent) => {
-    if (isIgnoredTarget(event.target)) return;
+    if (uiPointers.has(event.pointerId)) return;
+    if (isIgnoredEvent(event)) return;
     updatePointer(event.clientX, event.clientY);
   };
   const onPointerDown = (event: PointerEvent) => {
-    if (isIgnoredTarget(event.target)) return;
+    if (isIgnoredEvent(event)) {
+      uiPointers.add(event.pointerId);
+      ignoreNextClick = true;
+      if (ignoreClickTimer !== null) window.clearTimeout(ignoreClickTimer);
+      // Safety net: a click that never arrives must not swallow the next shader click.
+      ignoreClickTimer = window.setTimeout(clearIgnoreClick, CLICK_GUARD_TIMEOUT_MS);
+      return;
+    }
+    uiPointers.delete(event.pointerId);
+    clearIgnoreClick();
     updatePointer(event.clientX, event.clientY);
+  };
+  const onPointerEnd = (event: PointerEvent) => {
+    uiPointers.delete(event.pointerId);
+  };
+
+  // The shader is not text: a double click on it must not select text elsewhere in the page.
+  const onMouseDown = (event: MouseEvent) => {
+    if (event.detail < 2 || isIgnoredEvent(event)) return;
+    event.preventDefault();
+    window.getSelection()?.removeAllRanges();
   };
 
   const onClick = (event: MouseEvent) => {
-    if (isIgnoredTarget(event.target)) return;
+    const wasUiInteraction = ignoreNextClick;
+    clearIgnoreClick();
+    if (wasUiInteraction || isIgnoredEvent(event)) return;
     // Keyboard-activated clicks have detail 0 and no meaningful position.
     if (event.detail === 0) return;
     if (reducedMotion || options.getPaused() || !options.getSettings().ripple.enabled) return;
@@ -290,6 +330,9 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
   document.addEventListener("visibilitychange", onVisibilityChange);
   window.addEventListener("pointermove", onPointerMove, { passive: true });
   window.addEventListener("pointerdown", onPointerDown, { passive: true });
+  window.addEventListener("pointerup", onPointerEnd, { passive: true });
+  window.addEventListener("pointercancel", onPointerEnd, { passive: true });
+  window.addEventListener("mousedown", onMouseDown);
   window.addEventListener("click", onClick);
   window.addEventListener("orientationchange", onOrientationChange);
   if (visualViewport) {
@@ -322,7 +365,11 @@ export function createAsciiEngineHost(options: AsciiEngineHostOptions) {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointerup", onPointerEnd);
+      window.removeEventListener("pointercancel", onPointerEnd);
+      window.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("click", onClick);
+      clearIgnoreClick();
       window.removeEventListener("orientationchange", onOrientationChange);
       if (visualViewport) {
         visualViewport.removeEventListener("resize", onVisualViewportResize);

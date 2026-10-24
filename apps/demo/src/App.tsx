@@ -10,9 +10,10 @@ export default function App() {
 
   return (
     <main className="demo">
-      <AsciiShaderBackground {...settings} />
+      <AsciiShaderBackground className="demo__shader" {...settings} />
 
       <AsciiControls
+        className="demo__controls"
         value={settings}
         onValueChange={setSettings}
         onReset={resetSettings}
